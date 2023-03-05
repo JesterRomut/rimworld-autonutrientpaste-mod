@@ -82,19 +82,16 @@ namespace AutoNutrientPasteCommand
             }
         }
 
-        public void DispenseAll(Building_NutrientPasteDispenser dispenser)
+        public void DoDispense(Building_NutrientPasteDispenser dispenser)
         {
-            while (true)
+            Thing thing = dispenser.TryDispenseFood();
+            if (thing == null)
             {
-                Thing thing = dispenser.TryDispenseFood();
-                if (thing == null)
-                {
-                    break;
-                }
-                if (!GenPlace.TryPlaceThing(thing, dispenser.InteractionCell, dispenser.Map, ThingPlaceMode.Near))
-                {
-                    break;
-                }
+                return;
+            }
+            if (!GenPlace.TryPlaceThing(thing, dispenser.InteractionCell, dispenser.Map, ThingPlaceMode.Near))
+            {
+                return;
             }
         }
 
@@ -103,12 +100,7 @@ namespace AutoNutrientPasteCommand
             base.GameComponentTick();
 
             foreach(Building_NutrientPasteDispenser dispenser in activeDispensers) {
-                if (!dispenser.CanDispenseNow)
-                {
-                    continue;
-                }
-
-                DispenseAll(dispenser);
+                DoDispense(dispenser);
             }
         }
     }
